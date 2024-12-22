@@ -1,7 +1,6 @@
 package weatherinfo
 
 import (
-	"flag"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io"
@@ -14,7 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
 )
 
 var (
