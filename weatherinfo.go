@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io"
-	//~ "log"
 	"bufio"
 	"net/http"
 	"net/url"
@@ -19,7 +18,7 @@ import (
 )
 
 var (
-	weatherName = map[string]string{
+	KanaName = map[string]string{
 		"快晴": "ｶｲｾｲ", "晴れ": "ﾊﾚ", "薄曇り": "ｳｽｸﾓﾘ", "曇り": "ｸﾓﾘ",
 		"煙霧": "ｴﾝﾑ", "砂じん嵐": "ｻｼﾞﾝｱﾗｼ", "地ふぶき": "ｼﾞﾌﾌﾞｷ", "霧": "ｷﾘ",
 		"霧雨": "ｷﾘｻﾒ", "雨": "ｱﾒ", "みぞれ": "ﾐｿﾞﾚ", "雪": "ﾕｷ",
