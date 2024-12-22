@@ -1,4 +1,4 @@
-module com.gmail.endeavor2wako/weatherinfo
+module github.com/sakaisatoru/weatherinfo
 
 go 1.23
 
