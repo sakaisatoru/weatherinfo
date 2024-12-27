@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	//~ "log"
 )
 
 var (
@@ -75,9 +76,13 @@ type Weatherinfo3 struct {
 
 func New() *Weatherinfo3 {
 	return &Weatherinfo3{
-		workingdir: "/run/user/1000/weatherinfo",
+		workingdir: outputdir,
 		outputfile: "yjw.html",
 	}
+}
+
+func SetWorkingDir(workingdir string) {
+	outputdir = workingdir
 }
 
 func (w *Weatherinfo3) SetWorkingDir(workingdir string) {
@@ -100,7 +105,6 @@ func (w *Weatherinfo3) GetWeatherInfo(url string, label string) error {
 	if err := os.MkdirAll(w.workingdir, 0755); err != nil {
 		return err
 	}
-
 	output := filepath.Join(w.workingdir, w.outputfile)
 	currentTime := time.Now()
 	if err := Download(output, url); err != nil {
@@ -117,6 +121,7 @@ func (w *Weatherinfo3) GetWeatherInfo(url string, label string) error {
 	if err != nil {
 		return err
 	}
+
 	//
 	//  地名
 	//
@@ -179,35 +184,24 @@ func (w *Weatherinfo3) GetWeatherInfo(url string, label string) error {
 			})
 		})
 
+		ofset := 0
 		switch label {
+		case "明日":
+			ofset = 8
+			fallthrough
 		case "今日":
 			for x := 0; x < 8; x++ {
 				var tmp int
-				w.ForeData[x].Weather = buf[x][1]
+				w.ForeData[ofset+x].Weather = buf[x][1]
 				tmp, _ = strconv.Atoi(buf[x][2])
-				w.ForeData[x].Termperature = int16(tmp)
+				w.ForeData[ofset+x].Termperature = int16(tmp)
 				tmp, _ = strconv.Atoi(buf[x][3])
-				w.ForeData[x].Humidity = int16(tmp)
-				w.ForeData[x].Precipitation, _ = strconv.ParseFloat(buf[x][4], 64)
+				w.ForeData[ofset+x].Humidity = int16(tmp)
+				w.ForeData[ofset+x].Precipitation, _ = strconv.ParseFloat(buf[x][4], 64)
 				ss := strings.Split(buf[x][5], " ")
-				w.ForeData[x].Direction = ss[0]
+				w.ForeData[ofset+x].Direction = ss[0]
 				tmp, _ = strconv.Atoi(ss[1])
-				w.ForeData[x].Speed = int16(tmp)
-			}
-
-		case "明日":
-			for x := 0; x < 8; x++ {
-				var tmp int
-				w.ForeData[8+x].Weather = buf[x][1]
-				tmp, _ = strconv.Atoi(buf[x][2])
-				w.ForeData[8+x].Termperature = int16(tmp)
-				tmp, _ = strconv.Atoi(buf[x][3])
-				w.ForeData[8+x].Humidity = int16(tmp)
-				w.ForeData[8+x].Precipitation, _ = strconv.ParseFloat(buf[x][4], 64)
-				ss := strings.Split(buf[x][5], " ")
-				w.ForeData[8+x].Direction = ss[0]
-				tmp, _ = strconv.Atoi(ss[1])
-				w.ForeData[8+x].Speed = int16(tmp)
+				w.ForeData[ofset+x].Speed = int16(tmp)
 			}
 
 		case "週間予報":
@@ -233,8 +227,7 @@ func (w *Weatherinfo3) GetWeatherInfo(url string, label string) error {
 }
 
 func (w *Weatherinfo3) GetHoursLaterInfo(after int) (*string, *Forecast) {
-	// 現在時刻から指定時間後の予報を返す。データは自動更新されないので
-	// 必要であれば呼び出し側で新しいインスタンスを作成する事。
+	// 現在時刻から指定時間後の予報を返す。データは自動更新されない。
 	// 24時間以上先を指定した場合は nil,nil を返す
 	d1 := time.Now().Hour() + after
 
@@ -336,12 +329,7 @@ func ForecastUrlTargetArea(cityname string) (*map[string]string, error) {
 	return &urllist, err
 }
 
-//~ 未明: 0時～3時
-//~ 明け方: 3時～6時
-//~ 朝: 6時～9時
-//~ 昼前: 9時～12時
-//~ 昼過ぎ: 12時～15時
-//~ 夕方: 15時～18時
-//~ 夜のはじめ頃: 18時～21時
-//~ 夜遅く: 21時～24時
+//~ 未明: 0時～3時			明け方: 3時～6時		朝: 6時～9時
+//~ 昼前: 9時～12時		昼過ぎ: 12時～15時		夕方: 15時～18時
+//~ 夜のはじめ頃: 18時～21時	夜遅く: 21時～24時
 
