@@ -32,7 +32,7 @@ var (
 		"低温": "ﾃｲｵﾝ", "霜": "ｼﾓ", "着氷": "ﾁｬｸﾋｮｳ",
 		"着雪": "ﾁｬｸｾﾂ", "暴風": "ﾎﾞｳﾌｳ", "暴風雪": "ﾎﾞｳﾌｳｾﾂ",
 		"特別警報": "ﾄｸﾍﾞﾂｹｲﾎｳ", "警報": "ｹｲﾎｳ", "注意報": "ﾁｭｳｲﾎｳ",
-		"解除": "ｶｲｼﾞｮ", "無し": "ﾅｼ", "": ""}
+		"解除": "ｶｲｼﾞｮ", "無し": "ﾅｼ", "警報・注意報": "ｹｲﾎｳ･ﾁｭｳｲﾎｳ", "": ""}
 
 	timezone = []string{"ﾐﾒｲ", "ｱｹｶﾞﾀ", "ｱｻ", "ﾋﾙﾏｴ",
 		"ﾋﾙｽｷﾞ", "ﾕｳｶﾞﾀ", "ｺﾝﾊﾞﾝ", "ﾖﾙｵｿｸ",
@@ -134,6 +134,9 @@ func (w *Weatherinfo3) GetWeatherInfo(url string, label string) error {
 		if dt.Text() != "発表なし" {
 			dd := dt.Next()
 			a := WarnInfo{Label: dt.Text(), AlarmType: dd.Text()}
+			w.Warning = append(w.Warning, a)
+		} else {
+			a := WarnInfo{Label:"警報・注意報", AlarmType:"無し"}
 			w.Warning = append(w.Warning, a)
 		}
 	})
